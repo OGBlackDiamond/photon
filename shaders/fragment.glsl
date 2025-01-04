@@ -7,6 +7,13 @@ uniform vec3 pixel00Pos;
 uniform vec3 pixelDeltaU;
 uniform vec3 pixelDeltaV;
 
+uniform int numSpheres;
+// TODO: maybe make this not have to be set to a random number
+// use buffers??
+uniform mat3 sphereVectors[100];
+uniform vec3 sphereFloats[100];
+
+uniform int iterationCount;
 
 
 struct Ray {
@@ -51,6 +58,10 @@ Sphere sphere2 = Sphere(vec3(1.75, 0, 2), 1.5, Surface(
 ));
 
 
+// linear interpolation
+vec3 lerp(const vec3 v0, const vec3 v1, float weight) {
+    return v0 + (v1 - v0) * weight;
+}
 
 HitInfo checkCollision(Ray ray, Sphere sphere) {
     normalize(ray.position); normalize(ray.direction);
@@ -88,18 +99,21 @@ HitInfo calculateRayCollisions(Ray ray) {
     HitInfo info;
     info.didHit = false;
 
-    HitInfo hit1 = checkCollision(ray, sphere1);
-    if (hit1.didHit) {
-        info = hit1;
-    }
-    HitInfo hit2 = checkCollision(ray, sphere2);
-    if (hit2.didHit) {
-        if (hit1.didHit) {
-            if (hit1.distance < hit2.distance) {
-                info = hit2;
-            }
-        } else {
-            info = hit2;
+    for (int i = 0; i < numSpheres; i++) {
+        Sphere sphere = Sphere(sphereVectors[i][0].xyz,
+                        sphereFloats[i].x,
+                        Surface(
+                            sphereVectors[i][1].xyz,
+                            sphereVectors[i][2].xyz,
+                            sphereFloats[i].y,
+                            sphereFloats[i].z
+                        )
+                    );
+        HitInfo hit = checkCollision(ray, sphere);
+
+        if (hit.didHit && hit.distance < closestToRay) {
+            closestToRay = hit.distance;
+            info = hit;
         }
     }
 
@@ -135,14 +149,17 @@ vec3 traceRay(Ray ray, inout uint randomSeed) {
     for (int i = 0; i <= 30; i++) {
         HitInfo hit = calculateRayCollisions(ray);
         if (hit.didHit) {
-            vec3 randomDir = normalize(hit.normal + randomDirection(randomSeed));
-            
-            ray.position = hit.hitPoint;
-            ray.direction = randomDir;
 
+            vec3 randomDir = normalize(hit.normal + randomDirection(randomSeed));
+            vec3 specularDir = ray.direction - 2 * dot(ray.direction, hit.normal) * hit.normal;
+            
             Surface surface = hit.shapeSurface;
 
+            ray.position = hit.hitPoint;
+            ray.direction = lerp(randomDir, specularDir, surface.smoothness);
+
             light += color * (surface.emissionColor * surface.emissionStrength);
+
             color *= surface.surfaceColor;
         } else break;
     }
@@ -152,7 +169,7 @@ vec3 traceRay(Ray ray, inout uint randomSeed) {
 
 
 vec3 castRays() {
-    uint randomSeed = uint((pixelPosition.y + 1) * 2500) * 500 + uint((pixelPosition.x + 1) * 2500);
+    uint randomSeed = uint((pixelPosition.y + 1) * 2500) * 500 + uint((pixelPosition.x + 1) * 2500) + iterationCount * 256;
 
     vec3 pixelCenter = pixel00Pos + (pixelPosition.x * pixelDeltaU) + (pixelPosition.y * pixelDeltaV);
 
@@ -160,15 +177,16 @@ vec3 castRays() {
 
     vec3 totalColor = vec3(0);
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 25; i++) {
         totalColor += traceRay(ray, randomSeed);
     }
 
-    return totalColor / 1000;
+    return totalColor / 25;
 
 }
 
 
 void main() {
-    FragColor = vec4(castRays(), 1);
+    vec3 color = castRays();
+    FragColor = vec4(color, 1);
 }

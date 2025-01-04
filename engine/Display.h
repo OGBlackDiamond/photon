@@ -1,11 +1,14 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+#define balls 1
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "util/Shader.h"
 #include "util/Vector.h"
+#include "Sphere.h"
 
 class Display {
 public:
@@ -14,9 +17,17 @@ public:
 
     bool renderLoop();
 
+    void addSphere(Sphere);
+
 private:
 
     int width, height;
+
+    int iteration;
+
+    Sphere *spheres;
+    int numSpheres = 0;
+    int maxSpheres = 1;
 
     const float depth = 2;
 
@@ -37,6 +48,9 @@ private:
 
     Vector3 pixel00Loc;
 
+    float *sphereMatrixFloats;
+    float *sphereVectorFloats;
+
     const float verticies[12] = {
         1, 1, 0,
         1, -1, 0,
@@ -52,7 +66,8 @@ private:
 
     unsigned int VBO, VAO, EBO;
 
-    int vertexPixel00Pos, vertexPixelDeltaU, vertexPixelDeltaV;   
+    int vertexPixel00Pos, vertexPixelDeltaU, vertexPixelDeltaV, 
+        iterationCount, sphereVectors, sphereFloats, sphereCount;
 
     Shader *shaderProgram;
 
@@ -61,6 +76,8 @@ private:
     void initShaders();
 
     void calculateDisplaySettings();
+
+    void initializeSphereInformation();
 
 };
 
