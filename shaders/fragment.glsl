@@ -42,6 +42,12 @@ struct Sphere {
     Surface surface;
 };
 
+struct Triangle {
+    vec3 center;
+    vec3 v1, v2, v3;
+    Surface surface;
+};
+
 
 Sphere sphere1 = Sphere(vec3(-0.75, 0, 3), 0.5, Surface(
     vec3(1, 0.2, 0.2),
@@ -57,10 +63,63 @@ Sphere sphere2 = Sphere(vec3(1.75, 0, 2), 1.5, Surface(
     0
 ));
 
+Triangle tri = Triangle(
+    vec3(0, 0, 3),
+    sphereVectors[0][0],
+    sphereVectors[1][0],
+    sphereVectors[2][0],
+    Surface(
+        vec3(1, 1, 1),
+        vec3(0, 0, 0),
+        0,
+        1
+    )
+);
+
 
 // linear interpolation
 vec3 lerp(const vec3 v0, const vec3 v1, float weight) {
     return v0 + (v1 - v0) * weight;
+}
+
+HitInfo checkCollision(Ray ray, Triangle triangle) {
+    normalize(ray.position); normalize(ray.direction);
+
+    /*
+    triangle.v1 + triangle.center;
+    triangle.v2 + triangle.center;
+    triangle.v3 + triangle.center;
+    */
+
+    vec3 E1 = triangle.v2 - triangle.v1;
+    vec3 E2 = triangle.v3 - triangle.v1;
+
+    vec3 N = cross(E1, E2);
+
+    float det = -dot(ray.direction, N);
+    float invdet = 1.0/det;
+
+    vec3 AO = ray.position - triangle.v1;
+    vec3 DAO = cross(AO, ray.direction);
+
+    float u = dot(E2, DAO) * invdet;
+    float v = -dot(E1, DAO) * invdet;
+    float dist = dot(AO, N) * invdet;
+
+    float w = 1 - u - v;
+
+    HitInfo hit;
+
+    hit.didHit = (det >= 1e-6 && dist >= 0.0 && u >= 0.0 && v >= 0.0 && (u+v) <= 1.0);
+
+    if (hit.didHit) {
+        hit.distance = dist;
+        hit.hitPoint = ray.position + dist * ray.direction;
+        hit.normal = normalize(N);
+        hit.shapeSurface = triangle.surface;
+    }
+
+    return hit;
 }
 
 HitInfo checkCollision(Ray ray, Sphere sphere) {
@@ -115,6 +174,17 @@ HitInfo calculateRayCollisions(Ray ray) {
             closestToRay = hit.distance;
             info = hit;
         }
+    }
+
+    tri.v1 = sphereVectors[0][0].xyz;
+    tri.v2 = sphereVectors[2][0].xyz;
+    tri.v3 = sphereVectors[1][0].xyz;
+
+
+    HitInfo tmp = checkCollision(ray, tri);
+    if (tmp.didHit && tmp.distance < closestToRay) {
+        closestToRay = tmp.distance;
+        info = tmp;
     }
 
     return info;
