@@ -64,15 +64,15 @@ Sphere sphere2 = Sphere(vec3(1.75, 0, 2), 1.5, Surface(
 ));
 
 Triangle tri = Triangle(
-    vec3(0, 0, 3),
+    vec3(0, 0, 0),
     sphereVectors[0][0],
     sphereVectors[1][0],
     sphereVectors[2][0],
     Surface(
-        vec3(1, 1, 1),
+        vec3(1, 119.0/255.0, 188.0/255.0),
         vec3(0, 0, 0),
         0,
-        1
+        0
     )
 );
 
@@ -85,11 +85,9 @@ vec3 lerp(const vec3 v0, const vec3 v1, float weight) {
 HitInfo checkCollision(Ray ray, Triangle triangle) {
     normalize(ray.position); normalize(ray.direction);
 
-    /*
-    triangle.v1 + triangle.center;
-    triangle.v2 + triangle.center;
-    triangle.v3 + triangle.center;
-    */
+    triangle.v1 += triangle.center;
+    triangle.v2 += triangle.center;
+    triangle.v3 += triangle.center;
 
     vec3 E1 = triangle.v2 - triangle.v1;
     vec3 E2 = triangle.v3 - triangle.v1;
@@ -258,5 +256,5 @@ vec3 castRays() {
 
 void main() {
     vec3 color = castRays();
-    FragColor = vec4(color, 1);
+    FragColor = (vec4(color, 1) + texelFetch()) / 2;
 }

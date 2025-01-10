@@ -189,6 +189,8 @@ bool Display::renderLoop() {
         glfwSwapBuffers(window);
         glfwPollEvents();    
 
+        glfwGet
+
         return true;
 
     }
