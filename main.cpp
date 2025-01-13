@@ -1,5 +1,4 @@
 #include "engine/Display.h"
-#include "engine/Sphere.h"
 
 Sphere sphere1(
     Vector3(-0.75, 0.5, 3),

@@ -256,5 +256,5 @@ vec3 castRays() {
 
 void main() {
     vec3 color = castRays();
-    FragColor = (vec4(color, 1) + texelFetch()) / 2;
+    FragColor = (vec4(color, 1)) / 2;
 }

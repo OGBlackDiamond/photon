@@ -1,43 +1,55 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#ifndef TRIANGLE_H 
+#define TRIANGLE_H
 
-#include "util/Vector.h"
+#include "Vector.h"
 
-struct Sphere {
+struct Triangle{
 
     Vector3 position;
     Vector3 color;
     Vector3 emissionColor;
-    float radius;
     float emissionStrength;
     float smoothness;
 
-    Sphere() {
+    Vector3 v1, v2, v3;
+
+
+    Triangle() {
         position = Vector3();
         color = Vector3();
         emissionColor = Vector3();
-        radius = -1;
         emissionStrength = -1;
         smoothness = -1;
+
+        v1 = Vector3();
+        v2 = Vector3();
+        v3 = Vector3();
     }
 
-    Sphere(Vector3 position, Vector3 color, Vector3 emissionColor,
-           float radius, float emissionStrength, float smoothness) {
+    Triangle(Vector3 position, Vector3 color, Vector3 emissionColor,
+            float emissionStrength, float smoothness,
+            Vector3 v1, Vector3 v2, Vector3 v3) {
         this->position = position;
         this->color = color;
         this->emissionColor = emissionColor;
-        this->radius = radius;
         this->emissionStrength = emissionStrength;
         this->smoothness = smoothness;
+
+        this->v1 = v1;
+        this->v2 = v2;
+        this->v3 = v3;
     }
 
-    Sphere& operator=(const Sphere& rhs) {
+    Triangle& operator=(const Triangle& rhs) {
         position = rhs.position;
         color = rhs.color;
         emissionColor = rhs.emissionColor;
-        radius = rhs.radius;
         emissionStrength = rhs.emissionStrength;
         smoothness = rhs.smoothness;
+
+        v1 = rhs.v1;
+        v2 = rhs.v2;
+        v3 = rhs.v3;
 
         return *this;
     }

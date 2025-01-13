@@ -8,7 +8,7 @@
 
 #include "util/Shader.h"
 #include "util/Vector.h"
-#include "Sphere.h"
+#include "util/Sphere.h"
 
 class Display {
 public:
