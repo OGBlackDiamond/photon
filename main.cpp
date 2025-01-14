@@ -1,4 +1,5 @@
 #include "engine/Display.h"
+#include "engine/util/Mesh.h"
 
 Sphere sphere1(
     Vector3(-0.75, 0.5, 3),
@@ -36,9 +37,14 @@ Sphere ground(
     0
 );
 
+Mesh mesh("./meshes/Plane.obj",
+          Vector3(0, 0, 3), Vector3(1, 1, 1), Vector3(1, 1, 1),
+          1, 0);
+
 
 int main(int argc, char** argv) {
     Display display(500, 500);
+    display.setMesh(mesh);
     display.addSphere(sphere1);
     display.addSphere(sphere1);
     display.addSphere(sphere1);

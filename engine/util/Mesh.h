@@ -9,23 +9,27 @@
 
 class Mesh {
 public:
+
+    Mesh() {}
+
     Mesh(std::string meshPath,
          Vector3 position, Vector3 color, Vector3 emissionColor,
          float emissionStrength, float smoothness);
 
     ~Mesh();
 
-private:
+    int numTris = 0, numVerticies = 0, numFaces = 0;
 
     Triangle* triArray;
     Vector3* vertexArray;
     Vector3* faceArray;
 
-    int numTris = 0, numVerticies = 0, numFaces = 0;
-    int maxTris = 1, maxVerticies = 1, maxFaces = 1;
-
     Vector3 position, color, emissionColor;
     float emissionStrength, smoothness;
+
+private:
+
+    int maxTris = 1, maxVerticies = 1, maxFaces = 1;
 
     void addVertex(Vector3);
     void addFace(Vector3);

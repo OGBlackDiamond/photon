@@ -4,6 +4,10 @@ Mesh::Mesh(std::string meshPath,
          Vector3 position, Vector3 color, Vector3 emissionColor,
          float emissionStrength, float smoothness) {
 
+    triArray = new Triangle[maxTris];
+    vertexArray = new Vector3[maxVerticies];
+    faceArray = new Vector3[maxFaces];
+
     try {
 
         std::fstream meshFile(
@@ -39,8 +43,10 @@ Mesh::Mesh(std::string meshPath,
                 switch (type.c_str()[0]) {
                     case 'v':
                         addVertex(readVector);
+                        break;
                     case 'f': 
                         addFace(readVector);
+                        break;
                 }
 
             } 
@@ -64,6 +70,12 @@ Mesh::Mesh(std::string meshPath,
         ));
     }
 
+    this->position = position;
+    this->color = color;
+    this->emissionColor = emissionColor;
+
+    this->emissionStrength = emissionStrength;
+    this->smoothness = smoothness;
 }
 
 Mesh::~Mesh() {

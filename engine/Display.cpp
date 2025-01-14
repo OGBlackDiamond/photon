@@ -74,7 +74,13 @@ void Display::initShaders() {
     sphereVectors = glGetUniformLocation(shaderProgram->ID, "sphereVectors");
     sphereFloats = glGetUniformLocation(shaderProgram->ID, "sphereFloats");
 
+    triPoints = glGetUniformLocation(shaderProgram->ID, "trianglePoints");
+    triVectors = glGetUniformLocation(shaderProgram->ID, "triangleVectors");
+    triFloats = glGetUniformLocation(shaderProgram->ID, "triangleFloats");
+
+
     sphereCount = glGetUniformLocation(shaderProgram->ID, "numSpheres");
+    triCount = glGetUniformLocation(shaderProgram->ID, "numTris");
 
 }
 
@@ -113,6 +119,38 @@ void Display::initializeSphereInformation() {
         sphereVectorFloats[i * 3 + 2] = spheres[i].smoothness;
         
     } 
+}
+
+void Display::initializeTriangleInformation() {
+    triangleMatrixPoints = new float[mesh.numTris * 9];
+    triangleMatrixVectors = new float[mesh.numTris * 9];
+    triangleVectorFloats = new float[mesh.numTris * 2];
+    for (int i = 0; i < mesh.numTris; i++) {
+        triangleMatrixPoints[i * 9] = mesh.triArray[i].v1.x();
+        triangleMatrixPoints[i * 9 + 1] = mesh.triArray[i].v1.y();
+        triangleMatrixPoints[i * 9 + 2] = mesh.triArray[i].v1.z();
+        triangleMatrixPoints[i * 9 + 3] = mesh.triArray[i].v2.x();
+        triangleMatrixPoints[i * 9 + 4] = mesh.triArray[i].v2.y();
+        triangleMatrixPoints[i * 9 + 5] = mesh.triArray[i].v2.z();
+        triangleMatrixPoints[i * 9 + 6] = mesh.triArray[i].v3.x();
+        triangleMatrixPoints[i * 9 + 7] = mesh.triArray[i].v3.y();
+        triangleMatrixPoints[i * 9 + 8] = mesh.triArray[i].v3.z();
+        
+
+        triangleMatrixVectors[i * 9] = mesh.position.x();
+        triangleMatrixVectors[i * 9 + 1] = mesh.position.y();
+        triangleMatrixVectors[i * 9 + 2] = mesh.position.z();
+        triangleMatrixVectors[i * 9 + 3] = mesh.color.x();
+        triangleMatrixVectors[i * 9 + 4] = mesh.color.y();
+        triangleMatrixVectors[i * 9 + 5] = mesh.color.z();
+        triangleMatrixVectors[i * 9 + 6] = mesh.emissionColor.x();
+        triangleMatrixVectors[i * 9 + 7] = mesh.emissionColor.y();
+        triangleMatrixVectors[i * 9 + 8] = mesh.emissionColor.z();
+
+        triangleVectorFloats[i * 2] = mesh.emissionStrength;
+        triangleVectorFloats[i * 2 + 1] = mesh.smoothness;
+
+    }
 }
 
 bool Display::renderLoop() {
@@ -155,6 +193,7 @@ bool Display::renderLoop() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         initializeSphereInformation();
+        initializeTriangleInformation();
 
         shaderProgram -> use();
 
@@ -169,6 +208,9 @@ bool Display::renderLoop() {
 
         glUniform1i(sphereCount, numSpheres);
 
+        glUniform1i(triCount, mesh.numTris);
+
+
         glUniformMatrix3fv(
             sphereVectors,
             numSpheres,
@@ -182,6 +224,26 @@ bool Display::renderLoop() {
             sphereVectorFloats
         );
 
+        glUniformMatrix3fv(
+            triPoints,
+            mesh.numTris,
+            GL_FALSE,
+            triangleMatrixPoints 
+        );
+
+        glUniformMatrix3fv(
+            triVectors,
+            mesh.numTris,
+            GL_FALSE,
+            triangleMatrixVectors
+        );
+
+        glUniform2fv(
+            triFloats,
+            mesh.numTris,
+            triangleVectorFloats
+        );
+
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         //glBindVertexArray(0);
@@ -189,13 +251,15 @@ bool Display::renderLoop() {
         glfwSwapBuffers(window);
         glfwPollEvents();    
 
-        glfwGet
-
         return true;
 
     }
 
     return false;
+}
+
+void Display::setMesh(Mesh mesh) {
+    this->mesh = mesh;
 }
 
 void Display::addSphere(Sphere sphere) {

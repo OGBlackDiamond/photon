@@ -8,10 +8,22 @@ uniform vec3 pixelDeltaU;
 uniform vec3 pixelDeltaV;
 
 uniform int numSpheres;
+uniform int numTris;
+
 // TODO: maybe make this not have to be set to a random number
 // use buffers??
+
+// position, color, emissionColor
 uniform mat3 sphereVectors[100];
+// radius, brightness, smoothness
 uniform vec3 sphereFloats[100];
+
+// v1, v2, v3
+uniform mat3 trianglePoints[667];
+// position, color, emissionColor
+uniform mat3 triangleVectors[667];
+// brightness, smoothness
+uniform vec2 triangleFloats[667];
 
 uniform int iterationCount;
 
@@ -66,8 +78,8 @@ Sphere sphere2 = Sphere(vec3(1.75, 0, 2), 1.5, Surface(
 Triangle tri = Triangle(
     vec3(0, 0, 0),
     sphereVectors[0][0],
-    sphereVectors[1][0],
     sphereVectors[2][0],
+    sphereVectors[1][0],
     Surface(
         vec3(1, 119.0/255.0, 188.0/255.0),
         vec3(0, 0, 0),
@@ -174,15 +186,25 @@ HitInfo calculateRayCollisions(Ray ray) {
         }
     }
 
-    tri.v1 = sphereVectors[0][0].xyz;
-    tri.v2 = sphereVectors[2][0].xyz;
-    tri.v3 = sphereVectors[1][0].xyz;
+    for (int i = 0; i < numTris; i++) {
+        Triangle tri2 = Triangle(
+            triangleVectors[i][0].xyz,
+            trianglePoints[0][1].xyz,
+            trianglePoints[0][2].xyz,
+            trianglePoints[0][0].xyz,
+            Surface(
+                triangleVectors[i][1].xyz,
+                triangleVectors[i][2].xyz,
+                triangleFloats[i].x,
+                triangleFloats[i].y
+            )
+        );
 
-
-    HitInfo tmp = checkCollision(ray, tri);
-    if (tmp.didHit && tmp.distance < closestToRay) {
-        closestToRay = tmp.distance;
-        info = tmp;
+        HitInfo hit = checkCollision(ray, tri2);
+        if (hit.didHit && hit.distance < closestToRay) {
+            closestToRay = hit.distance;
+            info = hit;
+        }
     }
 
     return info;
