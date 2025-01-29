@@ -61,34 +61,6 @@ struct Triangle {
 };
 
 
-Sphere sphere1 = Sphere(vec3(-0.75, 0, 3), 0.5, Surface(
-    vec3(1, 0.2, 0.2),
-    vec3(1, 1, 1),
-    0,
-    0
-));
-
-Sphere sphere2 = Sphere(vec3(1.75, 0, 2), 1.5, Surface(
-    vec3(0, 0, 0),
-    vec3(1, 1, 1),
-    2,
-    0
-));
-
-Triangle tri = Triangle(
-    vec3(0, 0, 0),
-    sphereVectors[0][0],
-    sphereVectors[2][0],
-    sphereVectors[1][0],
-    Surface(
-        vec3(1, 119.0/255.0, 188.0/255.0),
-        vec3(0, 0, 0),
-        0,
-        0
-    )
-);
-
-
 // linear interpolation
 vec3 lerp(const vec3 v0, const vec3 v1, float weight) {
     return v0 + (v1 - v0) * weight;
@@ -187,7 +159,7 @@ HitInfo calculateRayCollisions(Ray ray) {
     }
 
     for (int i = 0; i < numTris; i++) {
-        Triangle tri2 = Triangle(
+        Triangle tri = Triangle(
             triangleVectors[i][0].xyz,
             trianglePoints[i][0].xyz,
             trianglePoints[i][1].xyz,
@@ -200,7 +172,7 @@ HitInfo calculateRayCollisions(Ray ray) {
             )
         );
 
-        HitInfo hit = checkCollision(ray, tri2);
+        HitInfo hit = checkCollision(ray, tri);
         if (hit.didHit && hit.distance < closestToRay) {
             closestToRay = hit.distance;
             info = hit;
@@ -271,12 +243,12 @@ vec3 castRays() {
         totalColor += traceRay(ray, randomSeed);
     }
 
-    return totalColor / 40;
+    return totalColor / 50;
 
 }
 
 
 void main() {
     vec3 color = castRays();
-    FragColor = (vec4(color, 1)) / 2;
+    FragColor = (vec4(color, 1));
 }
