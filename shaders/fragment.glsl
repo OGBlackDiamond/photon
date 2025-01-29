@@ -19,11 +19,11 @@ uniform mat3 sphereVectors[100];
 uniform vec3 sphereFloats[100];
 
 // v1, v2, v3
-uniform mat3 trianglePoints[667];
+uniform mat3 trianglePoints[385];
 // position, color, emissionColor
-uniform mat3 triangleVectors[667];
+uniform mat3 triangleVectors[385];
 // brightness, smoothness
-uniform vec2 triangleFloats[667];
+uniform vec2 triangleFloats[385];
 
 uniform int iterationCount;
 
@@ -189,9 +189,9 @@ HitInfo calculateRayCollisions(Ray ray) {
     for (int i = 0; i < numTris; i++) {
         Triangle tri2 = Triangle(
             triangleVectors[i][0].xyz,
-            trianglePoints[0][1].xyz,
-            trianglePoints[0][2].xyz,
-            trianglePoints[0][0].xyz,
+            trianglePoints[i][0].xyz,
+            trianglePoints[i][1].xyz,
+            trianglePoints[i][2].xyz,
             Surface(
                 triangleVectors[i][1].xyz,
                 triangleVectors[i][2].xyz,
@@ -236,7 +236,7 @@ vec3 traceRay(Ray ray, inout uint randomSeed) {
     vec3 color = vec3(1);
     vec3 light = vec3(0);
 
-    for (int i = 0; i <= 30; i++) {
+    for (int i = 0; i <= 10; i++) {
         HitInfo hit = calculateRayCollisions(ray);
         if (hit.didHit) {
 
@@ -267,11 +267,11 @@ vec3 castRays() {
 
     vec3 totalColor = vec3(0);
 
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < 50; i++) {
         totalColor += traceRay(ray, randomSeed);
     }
 
-    return totalColor / 25;
+    return totalColor / 40;
 
 }
 

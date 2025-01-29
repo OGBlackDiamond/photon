@@ -155,6 +155,7 @@ void Display::initializeTriangleInformation() {
 
 bool Display::renderLoop() {
 
+    /*
     iteration++;
     spheres[0].position = Vector3(
         cos(iteration * 0.055) + 0.0,
@@ -171,10 +172,11 @@ bool Display::renderLoop() {
         sin(iteration * 0.055) + 0.0,
         cos(iteration * 0.055) + 5.5
     );
-    spheres[3].position = Vector3(
-        cos(iteration * .01) * 5,
-        sin(iteration * .01) * 5,
-        cos(iteration * .01) * 5 + 5
+    */
+    spheres[0].position = Vector3(
+        -cos(iteration * .01) * 5,
+        -sin(iteration * .01) * 5,
+        -cos(iteration * .01) * 5 + 5
     );
 
     /*
@@ -193,7 +195,6 @@ bool Display::renderLoop() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         initializeSphereInformation();
-        initializeTriangleInformation();
 
         shaderProgram -> use();
 
@@ -260,6 +261,8 @@ bool Display::renderLoop() {
 
 void Display::setMesh(Mesh mesh) {
     this->mesh = mesh;
+
+    initializeTriangleInformation();
 }
 
 void Display::addSphere(Sphere sphere) {

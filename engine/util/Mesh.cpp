@@ -54,6 +54,7 @@ Mesh::Mesh(std::string meshPath,
         }
 
 
+
     } catch(std::ifstream::failure e) {
         std::cout << "ERROR::MESH::FILE_NOT_SUCCESFULLY_READ" << std::endl;
         return;
@@ -64,11 +65,14 @@ Mesh::Mesh(std::string meshPath,
         addTriangle(Triangle(
             position, color, emissionColor,
             emissionStrength, smoothness,
-            vertexArray[(int) faceArray[i].x()],
-            vertexArray[(int) faceArray[i].y()],
-            vertexArray[(int) faceArray[i].z()]
+            vertexArray[(int) faceArray[i].x() - 1],
+            vertexArray[(int) faceArray[i].y() - 1],
+            vertexArray[(int) faceArray[i].z() - 1]
         ));
+
     }
+
+    std::cout << numTris << std::endl;
 
     this->position = position;
     this->color = color;
@@ -76,6 +80,7 @@ Mesh::Mesh(std::string meshPath,
 
     this->emissionStrength = emissionStrength;
     this->smoothness = smoothness;
+
 }
 
 Mesh::~Mesh() {
