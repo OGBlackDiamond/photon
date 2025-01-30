@@ -19,11 +19,11 @@ uniform mat3 sphereVectors[100];
 uniform vec3 sphereFloats[100];
 
 // v1, v2, v3
-uniform mat3 trianglePoints[385];
+uniform mat3 trianglePoints[10];
 // position, color, emissionColor
-uniform mat3 triangleVectors[385];
+uniform mat3 triangleVectors[10];
 // brightness, smoothness
-uniform vec2 triangleFloats[385];
+uniform vec2 triangleFloats[10];
 
 uniform int iterationCount;
 
@@ -239,11 +239,11 @@ vec3 castRays() {
 
     vec3 totalColor = vec3(0);
 
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 1; i++) {
         totalColor += traceRay(ray, randomSeed);
     }
 
-    return totalColor / 50;
+    return totalColor / 1;
 
 }
 

@@ -2,19 +2,19 @@
 #include "engine/util/Mesh.h"
 
 Sphere sphere1(
-    Vector3(-0.75, 0.5, 3),
+    Vector3(0, 0.5, 3.25),
     Vector3(1, 0.2, 0.2),
     Vector3(1, 1, 1),
     0.5,
-    0,
-    0
+    1,
+    0.2 
 );
 
 Sphere sphere2(
     Vector3(1.75, 0, 3),
     Vector3(0, 0, 0),
     Vector3(1, 1, 1),
-    4.5,
+    3.5,
     2,
     0
 );
@@ -37,11 +37,11 @@ Sphere ground(
     0
 );
 
-Mesh mesh("./meshes/decimonkey.obj",
-          Vector3(0, 0, 3),
-          Vector3(160.0/255, 90.0/255, 62.0/255),
+Mesh mesh("./meshes/box2.obj",
+          Vector3(1, 1, 9),
+          Vector3(0.8, 0.2, 0.8),
           Vector3(1, 1, 1),
-          0,
+          1,
           0);
 
 
@@ -54,6 +54,7 @@ int main(int argc, char** argv) {
     display.addSphere(sphere1);
     */
     display.addSphere(sphere2);
+    //display.addSphere(sphere1);
     //display.addSphere(ground);
     while (display.renderLoop()) {}
     return 0;

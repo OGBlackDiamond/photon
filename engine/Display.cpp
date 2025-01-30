@@ -155,8 +155,8 @@ void Display::initializeTriangleInformation() {
 
 bool Display::renderLoop() {
 
-    /*
     iteration++;
+    /*
     spheres[0].position = Vector3(
         cos(iteration * 0.055) + 0.0,
         sin(iteration * 0.055) + 0.0,
@@ -251,6 +251,7 @@ bool Display::renderLoop() {
 
         glfwSwapBuffers(window);
         glfwPollEvents();    
+        
 
         return true;
 
