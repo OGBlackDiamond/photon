@@ -4,11 +4,13 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #include "util/Shader.h"
-#include "util/Vector.h"
 #include "util/Sphere.h"
+#include "util/Triangle.h"
 #include "util/Mesh.h"
+
 
 class Display {
 public:
@@ -20,6 +22,8 @@ public:
     void addSphere(Sphere);
 
     void setMesh(Mesh);
+
+    void initSSBO();
 
 private:
 
@@ -42,22 +46,16 @@ private:
     const float viewPortHeight = 2;
     float viewPortWidth;
 
-    Vector3 viewPortU;
-    Vector3 viewPortV;
+    glm::vec3 viewPortU;
+    glm::vec3 viewPortV;
 
-    Vector3 pixelDeltaU;
-    Vector3 pixelDeltaV;
+    glm::vec3 pixelDeltaU;
+    glm::vec3 pixelDeltaV;
 
-    Vector3 viewPortUpperLeft;
+    glm::vec3 viewPortUpperLeft;
 
-    Vector3 pixel00Loc;
+    glm::vec3 pixel00Loc;
 
-    float *sphereMatrixFloats;
-    float *sphereVectorFloats;
-
-    float *triangleMatrixPoints;
-    float *triangleMatrixVectors;
-    float *triangleVectorFloats;
 
     const float verticies[12] = {
         1, 1, 0,
@@ -72,11 +70,10 @@ private:
     };
 
 
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBO, VAO, EBO, sphereSSBO, triangleSSBO;
 
     int vertexPixel00Pos, vertexPixelDeltaU, vertexPixelDeltaV, 
-        iterationCount, sphereVectors, sphereFloats, sphereCount,
-        triPoints, triVectors, triFloats, triCount;
+        iterationCount, sphereCount, triCount;
 
     Shader *shaderProgram;
 
@@ -85,9 +82,6 @@ private:
     void initShaders();
 
     void calculateDisplaySettings();
-
-    void initializeSphereInformation();
-    void initializeTriangleInformation();
 
 };
 

@@ -10,23 +10,7 @@ uniform vec3 pixelDeltaV;
 uniform int numSpheres;
 uniform int numTris;
 
-// TODO: maybe make this not have to be set to a random number
-// use buffers??
-
-// position, color, emissionColor
-uniform mat3 sphereVectors[100];
-// radius, brightness, smoothness
-uniform vec3 sphereFloats[100];
-
-// v1, v2, v3
-uniform mat3 trianglePoints[10];
-// position, color, emissionColor
-uniform mat3 triangleVectors[10];
-// brightness, smoothness
-uniform vec2 triangleFloats[10];
-
 uniform int iterationCount;
-
 
 struct Ray {
     vec3 position;
@@ -59,6 +43,15 @@ struct Triangle {
     vec3 v1, v2, v3;
     Surface surface;
 };
+
+layout(std430, binding=0) buffer Spheres {
+    Sphere sphereData[];
+};
+
+layout(std430, binding=1) buffer Tris {
+    Triangle triData[];
+};
+
 
 
 // linear interpolation
@@ -141,15 +134,8 @@ HitInfo calculateRayCollisions(Ray ray) {
     info.didHit = false;
 
     for (int i = 0; i < numSpheres; i++) {
-        Sphere sphere = Sphere(sphereVectors[i][0].xyz,
-                        sphereFloats[i].x,
-                        Surface(
-                            sphereVectors[i][1].xyz,
-                            sphereVectors[i][2].xyz,
-                            sphereFloats[i].y,
-                            sphereFloats[i].z
-                        )
-                    );
+        Sphere sphere = sphereData[i];
+
         HitInfo hit = checkCollision(ray, sphere);
 
         if (hit.didHit && hit.distance < closestToRay) {
@@ -159,18 +145,7 @@ HitInfo calculateRayCollisions(Ray ray) {
     }
 
     for (int i = 0; i < numTris; i++) {
-        Triangle tri = Triangle(
-            triangleVectors[i][0].xyz,
-            trianglePoints[i][0].xyz,
-            trianglePoints[i][1].xyz,
-            trianglePoints[i][2].xyz,
-            Surface(
-                triangleVectors[i][1].xyz,
-                triangleVectors[i][2].xyz,
-                triangleFloats[i].x,
-                triangleFloats[i].y
-            )
-        );
+        Triangle tri = triData[i];
 
         HitInfo hit = checkCollision(ray, tri);
         if (hit.didHit && hit.distance < closestToRay) {
@@ -211,11 +186,11 @@ vec3 traceRay(Ray ray, inout uint randomSeed) {
     for (int i = 0; i <= 10; i++) {
         HitInfo hit = calculateRayCollisions(ray);
         if (hit.didHit) {
-
             vec3 randomDir = normalize(hit.normal + randomDirection(randomSeed));
             vec3 specularDir = ray.direction - 2 * dot(ray.direction, hit.normal) * hit.normal;
             
             Surface surface = hit.shapeSurface;
+
 
             ray.position = hit.hitPoint;
             ray.direction = lerp(randomDir, specularDir, surface.smoothness);
@@ -239,11 +214,11 @@ vec3 castRays() {
 
     vec3 totalColor = vec3(0);
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 20; i++) {
         totalColor += traceRay(ray, randomSeed);
     }
 
-    return totalColor / 1;
+    return totalColor / 2;
 
 }
 

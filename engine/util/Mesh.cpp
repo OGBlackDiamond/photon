@@ -1,12 +1,11 @@
 #include "Mesh.h"
 
 Mesh::Mesh(std::string meshPath,
-         Vector3 position, Vector3 color, Vector3 emissionColor,
-         float emissionStrength, float smoothness) {
+         glm::vec3 position, Surface surface) {
 
     triArray = new Triangle[maxTris];
-    vertexArray = new Vector3[maxVerticies];
-    faceArray = new Vector3[maxFaces];
+    vertexArray = new glm::vec3[maxVerticies];
+    faceArray = new glm::vec3[maxFaces];
 
     try {
 
@@ -38,7 +37,7 @@ Mesh::Mesh(std::string meshPath,
                 getline(meshFile, c);
                 fc = std::stof(c);
 
-                Vector3 readVector(fa, fb, fc);
+                glm::vec3 readVector(fa, fb, fc);
 
                 switch (type.c_str()[0]) {
                     case 'v':
@@ -60,27 +59,30 @@ Mesh::Mesh(std::string meshPath,
         return;
     }
 
+    this->position = position;
+    this->color = surface.surfaceColor;
+    this->emissionColor = surface.emissionColor;
+
+    this->emissionStrength = surface.emissionStrength;
+    this->smoothness = surface.smoothness;
+
 
     for (int i = 0; i < numFaces; i++) {
-        addTriangle(Triangle(
-            position, color, emissionColor,
-            emissionStrength, smoothness,
-            vertexArray[(int) faceArray[i].x() - 1],
-            vertexArray[(int) faceArray[i].y() - 1],
-            vertexArray[(int) faceArray[i].z() - 1]
-        ));
+        addTriangle({
+            position, 
+            vertexArray[(int)(faceArray[i].x - 1)],
+            vertexArray[(int)(faceArray[i].y - 1)],
+            vertexArray[(int)(faceArray[i].z - 1)],
+            {
+                color, emissionColor,
+                emissionStrength, smoothness
+            }
+        });
 
     }
 
     std::cout << numTris << std::endl;
-
-    this->position = position;
-    this->color = color;
-    this->emissionColor = emissionColor;
-
-    this->emissionStrength = emissionStrength;
-    this->smoothness = smoothness;
-
+    std::cout << numFaces << std::endl;
 }
 
 Mesh::~Mesh() {
@@ -103,10 +105,10 @@ void Mesh::addTriangle(Triangle tri) {
     numTris++;
 }
 
-void Mesh::addVertex(Vector3 vertex) {
+void Mesh::addVertex(glm::vec3 vertex) {
     if (numVerticies == maxVerticies) {
         maxVerticies *= 2;
-        Vector3* tmp = new Vector3[maxVerticies];
+        glm::vec3* tmp = new glm::vec3[maxVerticies];
         for (int i = 0; i < numVerticies; i++) {
             tmp[i] = vertexArray[i];
         }
@@ -117,10 +119,10 @@ void Mesh::addVertex(Vector3 vertex) {
     numVerticies++;
 }
 
-void Mesh::addFace(Vector3 face) {
+void Mesh::addFace(glm::vec3 face) {
     if (numFaces == maxFaces) {
         maxFaces *= 2;
-        Vector3* tmp = new Vector3[maxFaces];
+        glm::vec3* tmp = new glm::vec3[maxFaces];
         for (int i = 0; i < numFaces; i++) {
             tmp[i] = faceArray[i];
         }

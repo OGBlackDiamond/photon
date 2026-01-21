@@ -1,40 +1,38 @@
 #ifndef MESH_H 
 #define MESH_H
 
-#include "Triangle.h"
-
 #include <string>
 #include <iostream>
 #include <fstream>
 
+#include "Surface.h"
+#include "Triangle.h"
+#include <glm/glm.hpp>
+
 class Mesh {
 public:
-
     Mesh() {}
 
     Mesh(std::string meshPath,
-         Vector3 position, Vector3 color, Vector3 emissionColor,
-         float emissionStrength, float smoothness);
+         glm::vec3 position, Surface surface);
 
     ~Mesh();
 
     int numTris = 0, numVerticies = 0, numFaces = 0;
 
     Triangle* triArray;
-    Vector3* vertexArray;
-    Vector3* faceArray;
+    glm::vec3* vertexArray;
+    glm::vec3* faceArray;
 
-    Vector3 position, color, emissionColor;
+    glm::vec3 position, color, emissionColor;
     float emissionStrength, smoothness;
 
 private:
-
     int maxTris = 1, maxVerticies = 1, maxFaces = 1;
 
-    void addVertex(Vector3);
-    void addFace(Vector3);
+    void addVertex(glm::vec3);
+    void addFace(glm::vec3);
     void addTriangle(Triangle);
-
 };
 
 #endif

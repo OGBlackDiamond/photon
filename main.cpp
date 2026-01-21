@@ -1,62 +1,70 @@
 #include "engine/Display.h"
 #include "engine/util/Mesh.h"
 
-Sphere sphere1(
-    Vector3(0, 0.5, 3.25),
-    Vector3(1, 0.2, 0.2),
-    Vector3(1, 1, 1),
+Sphere sphere1 = {
+    glm::vec3(0, 1.5, 3.25),
     0.5,
-    1,
-    0.2 
-);
+    {
+        glm::vec3(1, 0.2, 0.2),
+        glm::vec3(0, 0, 0),
+        0,
+        0
+    }
+};
 
-Sphere sphere2(
-    Vector3(1.75, 0, 3),
-    Vector3(0, 0, 0),
-    Vector3(1, 1, 1),
+Sphere sphere2 = {
+    glm::vec3(-5, 10, -7),
     3.5,
-    2,
-    0
-);
+    {
+        glm::vec3(0, 0, 0),
+        glm::vec3(1, 1, 1),
+        1,
+        0
+    }
+};
 
-Sphere sphere3(
-    Vector3(0, 0.5, 4),
-    Vector3(0.2, 1, 1),
-    Vector3(1, 1, 1),
-    1,
-    0,
-    0
-);
+Sphere sphere3 = {
+    glm::vec3(-0.5, 0.75, 2.7),
+    0.1,
+    {
+        glm::vec3(0.2, 0.2, 1),
+        glm::vec3(0, 0, 0),
+        0,
+        0
+    }
+};
 
-Sphere ground(
-    Vector3(0, -100.5, 1.0),
-    Vector3(1, 1, 1),
-    Vector3(1, 1, 1),
+Sphere ground = {
+    glm::vec3(0, -100.5, 1.0),
     100,
-    0,
-    0
-);
+    {
+        glm::vec3(0.2, 1, 0.2),
+        glm::vec3(0, 0, 0),
+        0,
+        0
+    }
+};
 
-Mesh mesh("./meshes/box2.obj",
-          Vector3(1, 1, 9),
-          Vector3(0.8, 0.2, 0.8),
-          Vector3(1, 1, 1),
-          1,
-          0);
-
+Mesh mesh("./meshes/cube.obj",
+            glm::vec3(0, 1, 7),
+            {
+                glm::vec3(0.8, 0.2, 0.8),
+                glm::vec3(1, 1, 1),
+                1,
+                0
+            }
+        );
 
 int main(int argc, char** argv) {
     Display display(500, 500);
     display.setMesh(mesh);
-    /*
     display.addSphere(sphere1);
-    display.addSphere(sphere1);
-    display.addSphere(sphere1);
-    */
-    display.addSphere(sphere2);
+    display.addSphere(ground);
+    //display.addSphere(sphere2);
+    display.addSphere(sphere3);
+
+    display.initSSBO();
     //display.addSphere(sphere1);
-    //display.addSphere(ground);
     while (display.renderLoop()) {}
     return 0;
 }
-
