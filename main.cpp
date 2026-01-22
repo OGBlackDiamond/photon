@@ -2,7 +2,7 @@
 #include "engine/util/Mesh.h"
 
 Sphere sphere1 = {
-    glm::vec3(0, 1.5, 3.25),
+    glm::vec3(0, 0.5, 3.25),
     0.5,
     {
         glm::vec3(1, 0.2, 0.2),
@@ -45,22 +45,22 @@ Sphere ground = {
     }
 };
 
-Mesh mesh("./meshes/cube.obj",
-            glm::vec3(0, 1, 7),
+Mesh mesh("./meshes/monkey.obj",
+            glm::vec3(0, 1, 3),
             {
                 glm::vec3(0.8, 0.2, 0.8),
                 glm::vec3(1, 1, 1),
-                1,
+                0,
                 0
             }
         );
 
 int main(int argc, char** argv) {
     Display display(500, 500);
-    display.setMesh(mesh);
+    //display.setMesh(mesh);
     display.addSphere(sphere1);
     display.addSphere(ground);
-    //display.addSphere(sphere2);
+    display.addSphere(sphere2);
     display.addSphere(sphere3);
 
     display.initSSBO();

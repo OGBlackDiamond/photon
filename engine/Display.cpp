@@ -2,6 +2,9 @@
 
 Display::Display(int width, int height) {
 
+    this->width = width;
+    this->height = height;
+
     iteration = 0;
 
     spheres = new Sphere[maxSpheres];
@@ -22,7 +25,7 @@ Display::Display(int width, int height) {
         std::cout << "Failed to initialize GLAD" << std::endl;
     }
 
-    glViewport(0, 0, width, width);
+    glViewport(0, 0, width, height);
 
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);  
 
@@ -66,8 +69,15 @@ void Display::initShaders() {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);  // Unbind texture
+
         glBindFramebuffer(GL_FRAMEBUFFER, fbo[i]);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex[i], 0);
+        //GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0};
+        //glDrawBuffers(1, drawBuffers);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cout << "FBO " << i << " not complete!" << std::endl;
+        }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);  // Unbind
 
@@ -95,6 +105,8 @@ void Display::initShaders() {
     isAccumulatingLoc = glGetUniformLocation(shaderProgram->ID, "isAccumulating");
     prevTexLoc = glGetUniformLocation(shaderProgram->ID, "prevTex");
     accumTexLoc = glGetUniformLocation(shaderProgram->ID, "accumTex");
+    screenWidthLoc = glGetUniformLocation(shaderProgram->ID, "screenWidth");
+    screenHeightLoc = glGetUniformLocation(shaderProgram->ID, "screenHeight");
 
     sphereCount = glGetUniformLocation(shaderProgram->ID, "numSpheres");
     triCount = glGetUniformLocation(shaderProgram->ID, "numTris");
@@ -125,7 +137,7 @@ void Display::calculateDisplaySettings() {
 
     viewPortWidth = viewPortHeight  * (float(width) / height);
     viewPortU = glm::vec3(viewPortWidth, 0, 0);
-    viewPortV = glm::vec3(0, -viewPortHeight, 0);
+    viewPortV = glm::vec3(0, viewPortHeight, 0);
 
     pixelDeltaU = viewPortU / float(width);
     pixelDeltaV = viewPortV / float(height);
@@ -138,45 +150,11 @@ void Display::calculateDisplaySettings() {
 
 bool Display::renderLoop() {
 
-    //iteration++;
-    /*
-    spheres[0].position = Vector3(
-        cos(iteration * 0.055) + 0.0,
-        sin(iteration * 0.055) + 0.0,
-        sin(iteration * 0.055) + 5.5
-    );
-    spheres[1].position = Vector3(
-        sin(iteration * 0.055) + 0.0,
-        cos(iteration * 0.055) + 0.0,
-        sin(iteration * 0.055) + 5.5
-    );
-    spheres[2].position = Vector3(
-        sin(iteration * 0.055) + 0.0,
-        sin(iteration * 0.055) + 0.,
-        cos(iteration * 0.055) + 5.5
-    );
-    */
-    spheres[0].position = glm::vec3(
-        -cos(iteration * .01) * 5,
-        -sin(iteration * .01) * 5,
-        -cos(iteration * .01) * 5 + 5
-    );
-
-    /*
-
-
-    spheres[2].position = Vector3(
-        cos(iteration * 0.0175),
-        spheres[2].position.y(),
-        spheres[2].position.z()
-    );
-    */
-
     if (!glfwWindowShouldClose(window)) {
 
         iteration++;  // Increment each frame
         int frameCount = iteration;
-        int readIdx = (iteration - 1) % 2;
+        int readIdx = (iteration + 1) % 2;
         int writeIdx = iteration % 2;
 
         // Pass 1: Accumulate to ping-pong FBO
@@ -185,6 +163,8 @@ bool Display::renderLoop() {
         shaderProgram->use();
         glUniform1i(isAccumulatingLoc, 1);
         glUniform1i(frameCountLoc, frameCount);
+        glUniform1i(screenWidthLoc, width);
+        glUniform1i(screenHeightLoc, height);
         glUniform1i(prevTexLoc, 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, tex[readIdx]);
@@ -198,7 +178,7 @@ bool Display::renderLoop() {
 
         // Pass 2: Display to screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glClearColor(0.2, 1.0, 0.0, 1.0);
+        glClearColor(0.2, 0.0, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
         shaderProgram->use();
         glUniform1i(isAccumulatingLoc, 0);
@@ -210,6 +190,8 @@ bool Display::renderLoop() {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        std::cout << "frame" << std::endl;
 
         return true;
 

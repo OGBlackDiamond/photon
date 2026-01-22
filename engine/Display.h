@@ -78,7 +78,7 @@ private:
     int vertexPixel00Pos, vertexPixelDeltaU, vertexPixelDeltaV,
         sphereCount, triCount;
 
-    GLint frameCountLoc, isAccumulatingLoc, prevTexLoc, accumTexLoc;
+    GLint frameCountLoc, isAccumulatingLoc, prevTexLoc, accumTexLoc, screenWidthLoc, screenHeightLoc;
 
     Shader *shaderProgram;
 

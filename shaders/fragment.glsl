@@ -11,6 +11,8 @@ uniform int numSpheres;
 uniform int numTris;
 
 uniform int frameCount;
+uniform int screenWidth;
+uniform int screenHeight;
 
 uniform bool isAccumulating;
 uniform sampler2D prevTex;
@@ -64,7 +66,7 @@ vec3 lerp(const vec3 v0, const vec3 v1, float weight) {
 }
 
 HitInfo checkCollision(Ray ray, Triangle triangle) {
-    normalize(ray.position); normalize(ray.direction);
+    normalize(ray.direction);
 
     triangle.v1 += triangle.center;
     triangle.v2 += triangle.center;
@@ -102,7 +104,7 @@ HitInfo checkCollision(Ray ray, Triangle triangle) {
 }
 
 HitInfo checkCollision(Ray ray, Sphere sphere) {
-    normalize(ray.position); normalize(ray.direction);
+    normalize(ray.direction);
 
     vec3 oc = sphere.center - ray.position;
     
@@ -162,7 +164,7 @@ HitInfo calculateRayCollisions(Ray ray) {
 }
 
 float randomValue(inout uint seed) {
-    seed = seed * 747796405 + uint(2891336453);
+    seed = seed * 747796405 + uint(2891336453) * frameCount;
     uint result = ((seed >> ((seed >> 28) + 4)) ^ seed) * 277803737;
     result = (result >> 22) ^ result;
     return result / 4294967295.0;
@@ -210,33 +212,36 @@ vec3 traceRay(Ray ray, inout uint randomSeed) {
 
 
 vec3 castRays() {
-    uint randomSeed = uint((pixelPosition.y + 1) * 2500) * 500 + uint((pixelPosition.x + 1) * 2500) + frameCount * 256;
+    uint randomSeed = uint((pixelPosition.y + 1) * 2500) * 500 + uint((pixelPosition.x + 1) * 2500) + (frameCount * 2056);
 
-    vec3 pixelCenter = pixel00Pos + (pixelPosition.x * pixelDeltaU) + (pixelPosition.y * pixelDeltaV);
+    float i = ((pixelPosition.x + 1.0) / 2.0) * screenWidth;
+    float j = ((pixelPosition.y + 1.0) / 2.0) * screenHeight;
+    vec3 pixelCenter = pixel00Pos + i * pixelDeltaU + j * pixelDeltaV;
 
-    Ray ray = Ray(vec3(0, 0, 0), vec3(pixelPosition.xy, 2));
+    Ray ray = Ray(vec3(0, 0, 0), normalize(pixelCenter - vec3(0, 0, 0)));
 
     vec3 totalColor = vec3(0);
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 1; i++) {
         totalColor += traceRay(ray, randomSeed);
     }
 
-    return totalColor / 20;
+    return totalColor * 10;
 
 }
 
 
 void main() {
+    vec2 texCoord = (pixelPosition + 1.0) * 0.5;
     if (isAccumulating) {
         vec3 currentColor = castRays();
         vec3 prevColor = vec3(0);
         if (frameCount > 1) {
-            prevColor = texture(prevTex, pixelPosition).rgb;
+            prevColor = texture(prevTex, texCoord).rgb;
         }
         vec3 accumulated = (prevColor * (frameCount - 1) + currentColor) / frameCount;
         FragColor = vec4(accumulated, 1);
     } else {
-        FragColor = texture(accumTex, pixelPosition);
+        FragColor = texture(accumTex, texCoord);
     }
 }
