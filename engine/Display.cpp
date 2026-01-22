@@ -40,6 +40,8 @@ Display::~Display() {
     glDeleteBuffers(1, &EBO);
     glDeleteBuffers(1, &sphereSSBO);
     glDeleteBuffers(1, &triangleSSBO);
+    glDeleteFramebuffers(2, fbo);
+    glDeleteTextures(2, tex);
     glDeleteProgram(shaderProgram->ID);
     delete shaderProgram;
     delete []spheres;
@@ -53,6 +55,21 @@ void Display::initShaders() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &sphereSSBO);
     glGenBuffers(1, &triangleSSBO);
+
+    // Ping-pong FBO and texture setup
+    glGenFramebuffers(2, fbo);
+    glGenTextures(2, tex);
+    for (int i = 0; i < 2; i++) {
+        glBindTexture(GL_TEXTURE_2D, tex[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex[i], 0);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);  // Unbind
 
     glBindVertexArray(VAO);
 
@@ -74,7 +91,10 @@ void Display::initShaders() {
     vertexPixelDeltaU = glGetUniformLocation(shaderProgram->ID, "pixelDeltaU");
     vertexPixelDeltaV = glGetUniformLocation(shaderProgram->ID, "pixelDeltaV");
 
-    iterationCount = glGetUniformLocation(shaderProgram->ID, "iterationCount");
+    frameCountLoc = glGetUniformLocation(shaderProgram->ID, "frameCount");
+    isAccumulatingLoc = glGetUniformLocation(shaderProgram->ID, "isAccumulating");
+    prevTexLoc = glGetUniformLocation(shaderProgram->ID, "prevTex");
+    accumTexLoc = glGetUniformLocation(shaderProgram->ID, "accumTex");
 
     sphereCount = glGetUniformLocation(shaderProgram->ID, "numSpheres");
     triCount = glGetUniformLocation(shaderProgram->ID, "numTris");
@@ -154,31 +174,42 @@ bool Display::renderLoop() {
 
     if (!glfwWindowShouldClose(window)) {
 
-        glClearColor(0.2, 1.0, 0.0, 1.0);
+        iteration++;  // Increment each frame
+        int frameCount = iteration;
+        int readIdx = (iteration - 1) % 2;
+        int writeIdx = iteration % 2;
+
+        // Pass 1: Accumulate to ping-pong FBO
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo[writeIdx]);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        shaderProgram -> use();
-
-        glUniform3f(vertexPixel00Pos, 
-                    pixel00Loc.x, pixel00Loc.y, pixel00Loc.z);
-        glUniform3f(vertexPixelDeltaU,
-                    pixelDeltaU.x, pixelDeltaU.y, pixelDeltaU.z);
-        glUniform3f(vertexPixelDeltaV,
-                    pixelDeltaV.x, pixelDeltaV.y, pixelDeltaV.z);
-
-        glUniform1i(iterationCount, iteration);
-
+        shaderProgram->use();
+        glUniform1i(isAccumulatingLoc, 1);
+        glUniform1i(frameCountLoc, frameCount);
+        glUniform1i(prevTexLoc, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, tex[readIdx]);
+        glUniform3f(vertexPixel00Pos, pixel00Loc.x, pixel00Loc.y, pixel00Loc.z);
+        glUniform3f(vertexPixelDeltaU, pixelDeltaU.x, pixelDeltaU.y, pixelDeltaU.z);
+        glUniform3f(vertexPixelDeltaV, pixelDeltaV.x, pixelDeltaV.y, pixelDeltaV.z);
         glUniform1i(sphereCount, numSpheres);
-
         glUniform1i(triCount, mesh.numTris);
-
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        //glBindVertexArray(0);
+
+        // Pass 2: Display to screen
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClearColor(0.2, 1.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        shaderProgram->use();
+        glUniform1i(isAccumulatingLoc, 0);
+        glUniform1i(accumTexLoc, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, tex[writeIdx]);
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
-        glfwPollEvents();    
-        
+        glfwPollEvents();
 
         return true;
 

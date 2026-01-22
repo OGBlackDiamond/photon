@@ -10,7 +10,11 @@ uniform vec3 pixelDeltaV;
 uniform int numSpheres;
 uniform int numTris;
 
-uniform int iterationCount;
+uniform int frameCount;
+
+uniform bool isAccumulating;
+uniform sampler2D prevTex;
+uniform sampler2D accumTex;
 
 struct Ray {
     vec3 position;
@@ -206,7 +210,7 @@ vec3 traceRay(Ray ray, inout uint randomSeed) {
 
 
 vec3 castRays() {
-    uint randomSeed = uint((pixelPosition.y + 1) * 2500) * 500 + uint((pixelPosition.x + 1) * 2500) + iterationCount * 256;
+    uint randomSeed = uint((pixelPosition.y + 1) * 2500) * 500 + uint((pixelPosition.x + 1) * 2500) + frameCount * 256;
 
     vec3 pixelCenter = pixel00Pos + (pixelPosition.x * pixelDeltaU) + (pixelPosition.y * pixelDeltaV);
 
@@ -218,12 +222,21 @@ vec3 castRays() {
         totalColor += traceRay(ray, randomSeed);
     }
 
-    return totalColor / 2;
+    return totalColor / 20;
 
 }
 
 
 void main() {
-    vec3 color = castRays();
-    FragColor = (vec4(color, 1));
+    if (isAccumulating) {
+        vec3 currentColor = castRays();
+        vec3 prevColor = vec3(0);
+        if (frameCount > 1) {
+            prevColor = texture(prevTex, pixelPosition).rgb;
+        }
+        vec3 accumulated = (prevColor * (frameCount - 1) + currentColor) / frameCount;
+        FragColor = vec4(accumulated, 1);
+    } else {
+        FragColor = texture(accumTex, pixelPosition);
+    }
 }

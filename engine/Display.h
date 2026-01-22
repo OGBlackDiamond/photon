@@ -72,8 +72,13 @@ private:
 
     unsigned int VBO, VAO, EBO, sphereSSBO, triangleSSBO;
 
-    int vertexPixel00Pos, vertexPixelDeltaU, vertexPixelDeltaV, 
-        iterationCount, sphereCount, triCount;
+    GLuint fbo[2];
+    GLuint tex[2];
+
+    int vertexPixel00Pos, vertexPixelDeltaU, vertexPixelDeltaV,
+        sphereCount, triCount;
+
+    GLint frameCountLoc, isAccumulatingLoc, prevTexLoc, accumTexLoc;
 
     Shader *shaderProgram;
 
