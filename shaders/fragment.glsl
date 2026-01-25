@@ -226,7 +226,7 @@ vec3 castRays() {
         totalColor += traceRay(ray, randomSeed);
     }
 
-    return totalColor * 10;
+    return totalColor;
 
 }
 
@@ -242,6 +242,6 @@ void main() {
         vec3 accumulated = (prevColor * (frameCount - 1) + currentColor) / frameCount;
         FragColor = vec4(accumulated, 1);
     } else {
-        FragColor = texture(accumTex, texCoord);
+        FragColor = texture(accumTex, texCoord) * 10;
     }
 }

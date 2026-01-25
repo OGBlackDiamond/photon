@@ -2,7 +2,7 @@
 #include "engine/util/Mesh.h"
 
 Sphere sphere1 = {
-    glm::vec3(0, 0.5, 3.25),
+    glm::vec3(0.25, 0.25, 3.25),
     0.5,
     {
         glm::vec3(1, 0.2, 0.2),
@@ -34,9 +34,9 @@ Sphere sphere3 = {
     }
 };
 
-Sphere ground = {
-    glm::vec3(0, -100.5, 1.0),
-    100,
+Sphere sphere4 = {
+    glm::vec3(-0.5, 0.45, 2.7),
+    0.1,
     {
         glm::vec3(0.2, 1, 0.2),
         glm::vec3(0, 0, 0),
@@ -45,11 +45,33 @@ Sphere ground = {
     }
 };
 
+Sphere sphere5 = {
+    glm::vec3(-0.5, 0.15, 2.7),
+    0.1,
+    {
+        glm::vec3(1, 1, 1),
+        glm::vec3(0, 0, 0),
+        0,
+        0
+    }
+};
+
+Sphere ground = {
+    glm::vec3(0, -100.5, 1.0),
+    100,
+    {
+        glm::vec3(1, 1, 1),
+        glm::vec3(0, 0, 0),
+        0,
+        0.01
+    }
+};
+
 Mesh mesh("./meshes/monkey.obj",
-            glm::vec3(0, 1, 3),
+            glm::vec3(0, 1, 5),
             {
-                glm::vec3(0.8, 0.2, 0.8),
                 glm::vec3(1, 1, 1),
+                glm::vec3(0, 0, 0),
                 0,
                 0
             }
@@ -57,11 +79,15 @@ Mesh mesh("./meshes/monkey.obj",
 
 int main(int argc, char** argv) {
     Display display(500, 500);
-    //display.setMesh(mesh);
-    display.addSphere(sphere1);
+    display.setMesh(mesh);
+    //display.addSphere(sphere1);
     display.addSphere(ground);
     display.addSphere(sphere2);
+    /*
     display.addSphere(sphere3);
+    display.addSphere(sphere4);
+    display.addSphere(sphere5);
+    */
 
     display.initSSBO();
     //display.addSphere(sphere1);

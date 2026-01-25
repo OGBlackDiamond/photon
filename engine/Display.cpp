@@ -191,8 +191,6 @@ bool Display::renderLoop() {
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        std::cout << "frame" << std::endl;
-
         return true;
 
     }
