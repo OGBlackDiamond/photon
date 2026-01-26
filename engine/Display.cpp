@@ -13,6 +13,11 @@ Display::Display(int width, int height) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+    glfwSwapInterval(1); // or 0 for testing
+
+    
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     window = glfwCreateWindow(width, height, "Photon", NULL, NULL);
     if (window == NULL) {
@@ -130,7 +135,7 @@ void Display::initSSBO() {
                mesh.triArray,
                GL_STATIC_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, triangleSSBO);
-    
+
 }
 
 void Display::calculateDisplaySettings() {
@@ -176,6 +181,13 @@ bool Display::renderLoop() {
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+        //TODO: update to GLAD 4.5
+        /*
+        glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT |
+                GL_TEXTURE_FETCH_BARRIER_BIT |
+                GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        */
+
         // Pass 2: Display to screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClearColor(0.2, 0.0, 1.0, 1.0);
@@ -190,6 +202,9 @@ bool Display::renderLoop() {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        glFlush(); // NOT glFinish()
 
         return true;
 
