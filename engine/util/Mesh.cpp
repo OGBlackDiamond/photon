@@ -23,40 +23,40 @@ Mesh::Mesh(std::string meshPath,
 
                  getline(meshFile, type, ' ');
 
-                 if (type == "v") {
-                     getline(meshFile, a, ' ');
-                     fa = std::stof(a);
+                if (type == "v") {
+                    getline(meshFile, a, ' ');
+                    fa = std::stof(a);
 
-                     getline(meshFile, b, ' ');
-                     fb = std::stof(b);
+                    getline(meshFile, b, ' ');
+                    fb = std::stof(b);
 
-                     getline(meshFile, c);
-                     fc = std::stof(c);
+                    getline(meshFile, c);
+                    fc = std::stof(c);
 
-                     glm::vec3 readVector(fa, fb, fc);
-                     addVertex(readVector);
-                 } else if (type == "f") {
-                     std::string faceLine;
-                     getline(meshFile, faceLine);
-                     std::stringstream ss(faceLine);
-                     std::string token;
-                     std::vector<int> indices;
-                     while (std::getline(ss, token, ' ')) {
-                         if (!token.empty()) {
-                             std::stringstream ss2(token);
-                             std::string vertexIndex;
-                             std::getline(ss2, vertexIndex, '/');
-                             indices.push_back(std::stoi(vertexIndex));
-                         }
-                     }
-                     if (indices.size() >= 3) {
-                         glm::vec3 readVector(indices[0], indices[1], indices[2]);
-                         addFace(readVector);
-                     }
-                 } else {
-                     getline(meshFile, a);
-                     continue;
-                 }
+                    glm::vec3 readVector(fa, fb, fc);
+                    addVertex(readVector);
+                } else if (type == "f") {
+                    std::string faceLine;
+                    getline(meshFile, faceLine);
+                    std::stringstream ss(faceLine);
+                    std::string token;
+                    std::vector<int> indices;
+                    while (std::getline(ss, token, ' ')) {
+                        if (!token.empty()) {
+                            std::stringstream ss2(token);
+                            std::string vertexIndex;
+                            std::getline(ss2, vertexIndex, '/');
+                            indices.push_back(std::stoi(vertexIndex));
+                        }
+                    }
+                    if (indices.size() >= 3) {
+                        glm::vec3 readVector(indices[0], indices[1], indices[2]);
+                        addFace(readVector);
+                    }
+                } else {
+                    getline(meshFile, a);
+                    continue;
+                }
 
             } 
             meshFile.close();
@@ -96,9 +96,9 @@ Mesh::Mesh(std::string meshPath,
 }
 
 Mesh::~Mesh() {
-    delete[] triArray;
-    delete[] vertexArray;
-    delete[] faceArray;
+    if (triArray != nullptr) delete[] triArray;
+    if (vertexArray != nullptr) delete[] vertexArray;
+    if (faceArray != nullptr) delete[] faceArray;
 }
 
 void Mesh::addTriangle(Triangle tri) {

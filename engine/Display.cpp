@@ -52,7 +52,7 @@ Display::~Display() {
     glDeleteTextures(2, tex);
     glDeleteProgram(shaderProgram->ID);
     delete shaderProgram;
-    delete []spheres;
+    delete[] spheres;
     glfwTerminate();
 }
 
@@ -131,8 +131,8 @@ void Display::initSSBO() {
     // tri SSBO
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangleSSBO);
     glBufferData(GL_SHADER_STORAGE_BUFFER,
-               mesh.numTris * sizeof(Triangle),
-               mesh.triArray,
+               mesh->numTris * sizeof(Triangle),
+               mesh->triArray,
                GL_STATIC_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, triangleSSBO);
 
@@ -177,7 +177,7 @@ bool Display::renderLoop() {
         glUniform3f(vertexPixelDeltaU, pixelDeltaU.x, pixelDeltaU.y, pixelDeltaU.z);
         glUniform3f(vertexPixelDeltaV, pixelDeltaV.x, pixelDeltaV.y, pixelDeltaV.z);
         glUniform1i(sphereCount, numSpheres);
-        glUniform1i(triCount, mesh.numTris);
+        glUniform1i(triCount, mesh->numTris);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -213,7 +213,7 @@ bool Display::renderLoop() {
     return false;
 }
 
-void Display::setMesh(Mesh mesh) {
+void Display::setMesh(Mesh* mesh) {
     this->mesh = mesh;
 }
 

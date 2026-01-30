@@ -60,7 +60,7 @@ Sphere ground = {
     glm::vec3(0, -100.5, 1.0),
     100,
     {
-        glm::vec3(1, 1, 1),
+        glm::vec3(1, 0.4, 0.4),
         glm::vec3(0, 0, 0),
         0,
         0.01
@@ -78,8 +78,8 @@ Mesh mesh("./meshes/monkey.obj",
         );
 
 int main(int argc, char** argv) {
-    Display display(500, 500);
-    display.setMesh(mesh);
+    Display display(1000, 1000);
+    display.setMesh(&mesh);
     //display.addSphere(sphere1);
     display.addSphere(ground);
     display.addSphere(sphere2);

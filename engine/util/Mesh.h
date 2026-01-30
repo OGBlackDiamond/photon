@@ -13,8 +13,6 @@
 
 class Mesh {
 public:
-    Mesh() {}
-
     Mesh(std::string meshPath,
          glm::vec3 position, Surface surface);
 

@@ -21,7 +21,7 @@ public:
 
     void addSphere(Sphere);
 
-    void setMesh(Mesh);
+    void setMesh(Mesh*);
 
     void initSSBO();
 
@@ -31,11 +31,11 @@ private:
 
     int iteration;
 
-    Sphere *spheres;
+    Sphere* spheres;
     int numSpheres = 0;
     int maxSpheres = 1;
 
-    Mesh mesh;
+    Mesh* mesh;
 
     const float depth = 2;
 
@@ -80,7 +80,7 @@ private:
 
     GLint frameCountLoc, isAccumulatingLoc, prevTexLoc, accumTexLoc, screenWidthLoc, screenHeightLoc;
 
-    Shader *shaderProgram;
+    Shader* shaderProgram;
 
     GLFWwindow* window;
 
