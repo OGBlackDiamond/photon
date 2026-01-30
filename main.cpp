@@ -13,8 +13,8 @@ Sphere sphere1 = {
 };
 
 Sphere sphere2 = {
-    glm::vec3(-5, 10, -7),
-    3.5,
+    glm::vec3(0.5, 0.5, 0.5),
+    0.35,
     {
         glm::vec3(0, 0, 0),
         glm::vec3(1, 1, 1),
@@ -63,12 +63,72 @@ Sphere ground = {
         glm::vec3(1, 0.4, 0.4),
         glm::vec3(0, 0, 0),
         0,
-        0.01
+        0.999
     }
 };
 
+Sphere wall = {
+    glm::vec3(101.5, 0, 1.0),
+    100,
+    {
+        glm::vec3(0.4, 1, 0.4),
+        glm::vec3(0, 0, 0),
+        0,
+        0.999
+    }
+};
+
+Sphere wall2 = {
+    glm::vec3(-101.5, 0, 1.0),
+    100,
+    {
+        glm::vec3(0.4, 0.4, 1),
+        glm::vec3(0, 0, 0),
+        0,
+        0.999
+    }
+};
+
+Sphere wall3 = {
+    glm::vec3(0, 0, 105.5),
+    100,
+    {
+        glm::vec3(1, 1, 1),
+        glm::vec3(0, 0, 0),
+        0,
+        0.999
+    }
+};
+
+Sphere wall4 = {
+    glm::vec3(0, 0, -101.5),
+    100,
+    {
+        glm::vec3(1, 1, 1),
+        glm::vec3(0, 0, 0),
+        0,
+        0.999
+    }
+};
+
+
+
+Sphere ceiling = {
+    glm::vec3(0, 102, 1.0),
+    100,
+    {
+        glm::vec3(0.4, 0.4, 1),
+        glm::vec3(1, 1, 1),
+        0.1,
+        0
+    }
+};
+
+
+
+
 Mesh mesh("./meshes/monkey.obj",
-            glm::vec3(0, 1, 5),
+            glm::vec3(0, 0.5, 4),
             {
                 glm::vec3(1, 1, 1),
                 glm::vec3(0, 0, 0),
@@ -78,11 +138,16 @@ Mesh mesh("./meshes/monkey.obj",
         );
 
 int main(int argc, char** argv) {
-    Display display(1000, 1000);
+    Display display(2000, 2000);
     display.setMesh(&mesh);
     //display.addSphere(sphere1);
     display.addSphere(ground);
-    display.addSphere(sphere2);
+    display.addSphere(wall);
+    display.addSphere(wall2);
+    display.addSphere(wall3);
+    display.addSphere(wall4);
+    display.addSphere(ceiling);
+    //display.addSphere(sphere2);
     /*
     display.addSphere(sphere3);
     display.addSphere(sphere4);
