@@ -30,7 +30,10 @@ Display::Display(int width, int height) {
         std::cout << "Failed to initialize GLAD" << std::endl;
     }
 
-    glViewport(0, 0, width, height);
+    this->width *= 2;
+    this->height *= 2;
+
+    glViewport(0, 0, this->width, this->height);
 
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);  
 
@@ -164,6 +167,7 @@ bool Display::renderLoop() {
 
         // Pass 1: Accumulate to ping-pong FBO
         glBindFramebuffer(GL_FRAMEBUFFER, fbo[writeIdx]);
+        glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
         shaderProgram->use();
         glUniform1i(isAccumulatingLoc, 1);
@@ -190,6 +194,7 @@ bool Display::renderLoop() {
 
         // Pass 2: Display to screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, width, height);
         glClearColor(0.2, 0.0, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
         shaderProgram->use();

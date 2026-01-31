@@ -138,7 +138,7 @@ Mesh mesh("./meshes/monkey.obj",
         );
 
 int main(int argc, char** argv) {
-    Display display(2000, 2000);
+    Display display(1000, 1000);
     display.setMesh(&mesh);
     //display.addSphere(sphere1);
     display.addSphere(ground);
