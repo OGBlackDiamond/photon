@@ -15,3 +15,6 @@ A raytracer graphics engine written with OpenGL in C++
 
 ### Specular Reflection
 <img width="996" height="1000" alt="reflections" src="https://github.com/user-attachments/assets/5122013c-7e2a-4f5a-8289-088dfb3d8e3a" />
+
+### Spherical light source
+<img width="991" height="989" alt="spheres" src="https://github.com/user-attachments/assets/18dc8ca8-6ecd-4590-ba38-c4a36100de1d" />
