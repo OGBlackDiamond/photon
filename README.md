@@ -12,3 +12,6 @@ A raytracer graphics engine written with OpenGL in C++
 
 ### Real time animation
 [photon.webm](https://github.com/user-attachments/assets/49e43c9a-b96a-4680-9145-738d19550692)
+
+### Specular Reflection
+<img width="996" height="1000" alt="reflections" src="https://github.com/user-attachments/assets/5122013c-7e2a-4f5a-8289-088dfb3d8e3a" />
