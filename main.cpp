@@ -2,13 +2,13 @@
 #include "engine/util/Mesh.h"
 
 Sphere sphere1 = {
-    glm::vec3(0.25, 0.25, 3.25),
+    glm::vec3(0, 0.25, 3.25),
     0.5,
     {
-        glm::vec3(1, 0.2, 0.2),
+        glm::vec3(1, 1, 1),
         glm::vec3(0, 0, 0),
         0,
-        0
+        0.9
     }
 };
 
@@ -63,7 +63,7 @@ Sphere ground = {
         glm::vec3(1, 0.4, 0.4),
         glm::vec3(0, 0, 0),
         0,
-        0.999
+        0
     }
 };
 
@@ -74,7 +74,7 @@ Sphere wall = {
         glm::vec3(0.4, 1, 0.4),
         glm::vec3(0, 0, 0),
         0,
-        0.999
+        0
     }
 };
 
@@ -85,7 +85,7 @@ Sphere wall2 = {
         glm::vec3(0.4, 0.4, 1),
         glm::vec3(0, 0, 0),
         0,
-        0.999
+        0
     }
 };
 
@@ -96,7 +96,7 @@ Sphere wall3 = {
         glm::vec3(1, 1, 1),
         glm::vec3(0, 0, 0),
         0,
-        0.999
+        0
     }
 };
 
@@ -107,7 +107,7 @@ Sphere wall4 = {
         glm::vec3(1, 1, 1),
         glm::vec3(0, 0, 0),
         0,
-        0.999
+        0
     }
 };
 
@@ -119,7 +119,7 @@ Sphere ceiling = {
     {
         glm::vec3(0.4, 0.4, 1),
         glm::vec3(1, 1, 1),
-        0.1,
+        0.08,
         0
     }
 };

@@ -218,15 +218,17 @@ vec3 castRays() {
     float j = ((pixelPosition.y + 1.0) / 2.0) * screenHeight;
     vec3 pixelCenter = pixel00Pos + i * pixelDeltaU + j * pixelDeltaV;
 
-    Ray ray = Ray(vec3(0, 0, 0), normalize(pixelCenter - vec3(0, 0, 0)));
-
     vec3 totalColor = vec3(0);
 
+    Ray ray;
+
     for (int i = 0; i < 1; i++) {
+        vec3 randomCenter = pixelCenter + vec3(1/(randomDirection(randomSeed).xy * 4000), 0);
+        ray = Ray(vec3(0, 0, 0), normalize(randomCenter));
         totalColor += traceRay(ray, randomSeed);
     }
 
-    return totalColor;
+    return totalColor / 1;
 
 }
 
